@@ -1,0 +1,91 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep 27 09:21:37 2022
+@author: russj
+"""
+
+import spectral as sp
+import spectral.io.envi as envi
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+from scipy.stats import chi2
+
+
+#%% open data
+
+'''requires either the hdr files to be in the environment variable directory or absolute pathnames for data, white ref and dark ref'''
+
+
+
+
+box = envi.open('863_16_12_215m00_234m00_2019-02-13_11-18-09.hdr', '863_16_12_215m00_234m00_2019-02-13_11-18-09.raw' )
+white_ref = envi.open('WHITEREF_863_16_12_215m00_234m00_2019-02-13_11-18-09.hdr', 'WHITEREF_863_16_12_215m00_234m00_2019-02-13_11-18-09.raw')
+dark_ref = envi.open('DARKREF_863_16_12_215m00_234m00_2019-02-13_11-18-09.hdr', 'DARKREF_863_16_12_215m00_234m00_2019-02-13_11-18-09.raw')
+
+#%%
+data = np.array(box.load())
+white = np.array(white_ref.load())
+dark = np.array(dark_ref.load())
+
+#%%
+
+
+data = data[:, :, 13:262]
+white = white[:, :, 13:262]
+dark = dark[:, :, 13:262]
+bands = box.bands.centers[13:262]
+
+#%% ''' calib files produces arrays with shape (0, width, bands), but every calib file is the same! and I have dark ref values over 65000, so this file is useless, or I dont understand it'''
+calib = envi.open('D:/PYTHON_Messing/Hyperspectral_data/bpr_SWIR_461061.hdr', 'D:/PYTHON_Messing/Hyperspectral_data/bpr_SWIR_461061.bpr')
+calibar = np.array(calib.load())
+
+#%% '''instead use errors in the dark ref to identify bad bands'''
+
+std = np.std(dark, axis=0)
+mean5sd = (3 * np.std(dark)) + np.mean(dark) #This might not do what I think it does, check
+
+l, r, b = np.where(dark > mean5sd)
+print(len(l))
+print(len(r))
+print(len(b))
+
+      
+ 
+listr = list(r)
+listb = list(b)
+listl = list(l)
+#%%
+def flatten_bad_band(A, l, r):
+    resarr = A.copy()  
+    loop_count = 0
+    for idx in zip(l, r):
+        loop_count += 1
+        resarr[:,idx[0], idx[1]] = np.average(np.stack((resarr[:,idx[0], idx[1]], resarr[:,idx[0]+2, idx[1]])), axis=0)
+    print(loop_count)    
+    return resarr
+    print(loop_count)
+
+
+dark_clean = flatten_bad_band(dark, listr, listb)
+
+white_clean = flatten_bad_band(white,listr, listb)
+
+data_clean = flatten_bad_band(data, listr, listb)
+
+
+#%% '''reflectance corrected data'''
+
+
+def reflect_correct(x, w, d):
+    wmax = np.mean(w, axis=0)
+    dmin = np.mean(d, axis=0)
+    result = np.divide(np.subtract(x, dmin), np.subtract(wmax, dmin))
+    return result 
+
+data_reflect = reflect_correct(data_clean, white_clean, dark_clean)
+
+
+
+#%% ''' save reflectance image '''
+envi.save_image(r'C:/Users/Russell.Rogers/Documents/Hyperspectral/reflectance/863_16_12_215m00_234m.hdr', data_reflect)
