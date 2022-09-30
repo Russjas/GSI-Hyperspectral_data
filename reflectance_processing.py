@@ -4,14 +4,6 @@ Created on Thu Sep 29 08:38:50 2022
 
 @author: russj
 """
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 28 14:15:21 2022
-
-@author: Russell.Rogers
-"""
-
 import spectral as sp
 import spectral.io.envi as envi
 import numpy as np
