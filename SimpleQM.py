@@ -4,7 +4,8 @@ Created on Thu Oct  6 12:38:49 2022
 
 @author: Russell.Rogers
 
-Transcription of the SQM method for determining wavelenghth position of the minima of the spectral absorbtion feature. Transcribed from:
+Transcription of the SQM method for determining true wavelength position of the minima of the spectral absorbtion feature, 
+as opposed to returning only the wavelength band width. Transcribed from:
    Rodger, Andrew & Laukamp, Carsten & Haest, Maarten & Cudahy, Thomas. (2012). 
    A simple quadratic method of absorption feature wavelength estimation in continuum removed spectra. 
    Remote Sensing of Environment. 118. 273–283. 10.1016/j.rse.2011.11.025. 
