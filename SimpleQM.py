@@ -16,13 +16,6 @@ import spectral as sp
 import spectral.io.envi as envi
 import numpy as np
 
-
-
-#%%
-
-
-#%%
-
 class SQM:
     def __init__(self, wavelengths, depths):
         self.wavelengths = wavelengths
@@ -53,9 +46,9 @@ def get_SQM(data, bands):
 #%%
 if __name__ == "__main__":
 
-    box = envi.open('C:/Users/Russell.Rogers/Documents/Hyperspectral/Datafiles/Reflectance/Corrected_RR/ref_16-2_55_230m90_235m40_2019-01-10_11-16-33/length_CRtight.hdr')
+    box = envi.open('C:/Users/_____/Documents/Hyperspectral/Datafiles/Reflectance/Corrected_RR/ref_16-2_55_230m90_235m40_2019-01-10_11-16-33/length_CRtight.hdr')
     data = np.array(box.load())
-    bands = np.load('C:/Users/Russell.Rogers/Documents/Hyperspectral/Utility_files/Clipped_Bands.npy')
+    bands = np.load('C:/Users/_____/Documents/Hyperspectral/Utility_files/Clipped_Bands.npy')
     bands = bands[220:]    
     
     sqm = get_SQM(data, bands)
